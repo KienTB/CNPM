@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" />
+    <link rel="stylesheet" href="/employee_styles.css" />
+</head>
+<body>
+<div class="Wireframe9">
+
+    <div class="Component3">
+        <div class="Rectangle37">
+            <a href="/admin/admin-home_page" class="btn">
+                <div class="HomePage">Home Page</div>
+            </a>
+            <a href="/admin/employee" class="btn">
+                <div class="Mclockin">Employee</div>
+            </a>
+            <a href="/admin/admin-clockin_page" class="btn">
+                <div class="Salary">Clockin</div>
+            </a>
+            <a href="/admin/admin-salary_page" class="btn">
+                <div class="Notification">Salary</div>
+            </a>
+            <a href="/admin/admin-absence_page" class="btn">
+                <div class="Absence">Absence</div>
+            </a>
+            <a href="/admin/admin-support_page" class="btn">
+                <div class="Support">Support</div>
+            </a>
+        </div>
+    </div>
+    <div class="Rectangle38">
+        <a href="/home_page" class="btn">
+            <div class="Workday">Workday</div>
+        </a>
+        <div class="Group33">
+            <div class="Rectangle39">
+                <input type="search" name="search" placeholder="Search" required>
+                <div class="Group36">
+                    <a href="/profile_page" class="AccountCircle">
+                        <img src="/asset/icon.png" alt="">
+                    </a>
+                    <div class="Bell">
+                        <img src="/asset/bell.png" alt="Notifications Bell">
+                    </div>
+                    <div class="Chat">
+                        <img src="/asset/mess.png" alt="Chat Icon">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- Icons Section -->
+    <div class="rectangle-c"><span class="add">Add</span></div>
+
+    <div class="rectangle-d">
+        <span class="name-staff-id-1">Name - StaffID</span>
+    </div>
+    <div class="rectangle-e">
+        <span class="name-staff-id-2">Name - StaffID</span>
+    </div>
+    <div class="rectangle-f">
+        <span class="name-staff-id-3">Name - StaffID</span>
+    </div>
+    <div class="rectangle-g">
+        <span class="name-staff-id-4">Name - StaffID</span>
+    </div>
+    <div class="rectangle-h">
+        <span class="name-staff-id-5">Name - StaffID</span>
+    </div>
+    <div class="rectangle-i">
+        <span class="name-staff-id-6">Name - StaffID</span>
+    </div>
+    <div class="rectangle-k">
+        <span class="name-staff-id-7">Name - StaffID</span>
+    </div>
+    <div class="rectangle-0">
+        <button class="button-add">Add</button>
+    </div>
+
+    <script>
+        // Sự kiện cho nút Add
+        document.querySelector('.button-add').addEventListener('click', function() {
+            window.location.href = '/admin/admin-add_employee';
+        });
+
+        // Function to display employees
+        function displayEmployees(employees) {
+            const container1 = document.querySelector('.name-staff-id-1');
+            const container2 = document.querySelector('.name-staff-id-2');
+            const container3 = document.querySelector('.name-staff-id-3');
+            const container4 = document.querySelector('.name-staff-id-4');
+            const container5 = document.querySelector('.name-staff-id-5');
+            const container6 = document.querySelector('.name-staff-id-6');
+            const container7 = document.querySelector('.name-staff-id-7');
+            const container8 = document.querySelector('.name-staff-id-8');
+
+            employees.forEach((employee, index) => {
+                const employeeText = `${employee.name} - ${employee.id_employee}`;
+
+                switch (index) {
+                    case 0:
+                        container1.textContent = employeeText;
+                        break;
+                    case 1:
+                        container2.textContent = employeeText;
+                        break;
+                    case 2:
+                        container3.textContent = employeeText;
+                        break;
+                    case 3:
+                        container4.textContent = employeeText;
+                        break;
+                    case 4:
+                        container5.textContent = employeeText;
+                        break;
+                    case 5:
+                        container6.textContent = employeeText;
+                        break;
+                    case6:
+                        container7.textContent = employeeText;
+                        break;
+                    case7:
+                        container8.textContent = employeeText;
+                        break;
+                    default:
+                        console.warn('Không đủ chỗ hiển thị thêm nhân viên!');
+                }
+            });
+        }
+
+        // Fetch API để lấy danh sách nhân viên từ server
+        fetch('/api/get-employee-info')
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    displayEmployees(data); // Gọi hàm hiển thị danh sách nhân viên
+                } else {
+                    console.error("Không tìm thấy nhân viên nào");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+
+</div>
+</body>
+</html>
