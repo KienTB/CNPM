@@ -2,6 +2,7 @@ package com.cnpm.demo.model.Controller;
 
 import com.cnpm.demo.model.Model.Employee;
 import com.cnpm.demo.model.Repository.EmployeeRepository;
+import com.cnpm.demo.model.Service.EmployeeService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import java.util.Map;
 public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private EmployeeService employeeService;
     @GetMapping("/api/get-current-employee")
     public ResponseEntity<Map<String, Object>> getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -63,6 +66,20 @@ public class EmployeeController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error deleting employee: " + e.getMessage());
+        }
+    }
+    @PutMapping("/api/update-employee/{id_employee}")
+    public ResponseEntity<Map<String, Object>> updateEmployee(@PathVariable Long id_employee, @RequestBody Employee employeeDetails) {
+        Map<String, Object> response = new HashMap<>();
+        boolean updateSuccess = employeeService.updateEmployee(id_employee, employeeDetails);
+        if (updateSuccess) {
+            response.put("success", true);
+            response.put("message", "Employee updated successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("success", false);
+            response.put("message", "Employee not found");
+            return ResponseEntity.status(404).body(response);
         }
     }
 }

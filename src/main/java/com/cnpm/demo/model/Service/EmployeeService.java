@@ -33,4 +33,17 @@ public class EmployeeService {
     public boolean existsByUsername(String username) {
         return employeeRepository.existsByUsername(username);
     }
+    public boolean updateEmployee(Long idEmployee, Employee newEmployeeDetails) {
+        Employee existingEmployee = employeeRepository.findById(idEmployee).orElse(null);
+        if (existingEmployee != null) {
+            existingEmployee.setName(newEmployeeDetails.getName());
+            existingEmployee.setGender(newEmployeeDetails.getGender());
+            existingEmployee.setEmail(newEmployeeDetails.getEmail());
+            existingEmployee.setPhone(newEmployeeDetails.getPhone());
+            existingEmployee.setAddress(newEmployeeDetails.getAddress());
+            employeeRepository.save(existingEmployee);
+            return true;
+        }
+        return false;
+    }
 }

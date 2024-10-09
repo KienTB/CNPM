@@ -56,7 +56,7 @@
 
     <div class="rectangle-d">
         <div class="staff-row">
-            <span class="name-staff-id-1">Bùi Trung Kiên - 1</span>
+            <span class="name-staff-id-1">Name - StaffID</span>
             <div class="button-container">
                 <button class="button-edit">Edit</button>
                 <button class="button-delete">Delete</button>
@@ -68,7 +68,6 @@
         <div class="staff-row">
             <span class="name-staff-id-2">Name - StaffID</span>
             <div class="button-container">
-                <button class="button-edit">Edit</button>
                 <button class="button-delete">Delete</button>
             </div>
         </div>
@@ -78,7 +77,6 @@
         <div class="staff-row">
             <span class="name-staff-id-3">Name - StaffID</span>
             <div class="button-container">
-                <button class="button-edit">Edit</button>
                 <button class="button-delete">Delete</button>
             </div>
         </div>
@@ -87,7 +85,6 @@
         <div class="staff-row">
             <span class="name-staff-id-4">Name - StaffID</span>
             <div class="button-container">
-                <button class="button-edit">Edit</button>
                 <button class="button-delete">Delete</button>
             </div>
         </div>
@@ -96,7 +93,6 @@
         <div class="staff-row">
             <span class="name-staff-id-5">Name - StaffID</span>
             <div class="button-container">
-                <button class="button-edit">Edit</button>
                 <button class="button-delete">Delete</button>
             </div>
         </div>
@@ -104,6 +100,7 @@
     <div class="rectangle-0">
         <button class="button-add">Add</button>
     </div>
+    <button class="button-edit">Edit</button>
     <div id="success-alert" class="alert-box">
         Employee added successfully!
     </div>
@@ -195,26 +192,33 @@
     </script>
 
     <script>
-        let id_employeeToDelete;
-        let employeeElementToDelete;
+        let id_employee_to_delete; // Biến toàn cục lưu id nhân viên cần xóa
+        let employeeElementToDelete; // Biến toàn cục lưu phần tử DOM của nhân viên cần xóa
 
-        function deleteEmployee(id_employee, employeeElement) {
-            document.getElementById('confirmModal').style.display = 'block';  // Hiển thị modal
-            id_employeeToDelete = id_employee;  // Lưu lại id và element cần xóa
-            employeeElementToDelete = employeeElement;
+        // Hàm hiển thị thông báo
+        function showAlert(message) {
+            const alertBox = document.getElementById('success-alert');
+            alertBox.innerText = message; // Thay đổi nội dung alert theo thông báo
+            alertBox.classList.add('show'); // Hiển thị alert box
+
+            // Tự động ẩn sau 3 giây
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 3000);
         }
 
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            fetch(`/api/delete-employee/${id_employeeToDelete}`, {
+        // Hàm để thực hiện việc xóa nhân viên
+        function deleteEmployee(id_employee, employeeElement) {
+            fetch(`/api/delete-employee/${id_employee}`, {
                 method: 'DELETE',
             })
             .then(response => {
                 if (response.ok) {
-                    employeeElementToDelete.remove();  // Xóa nhân viên khỏi giao diện
-                    showAlert(`The employee whose id ${id_employee} code has been deleted.`);
+                    employeeElement.remove();
+                    showAlert(`The employee with code id ${id_employee} has been deleted.`);
                 } else {
                     return response.text().then(text => {
-                        throw new Error(text || `Delete failed for employee with id ${id_employee} code`);
+                        throw new Error(text || `Delete failed for employee with id code ${id_employee}`);
                     });
                 }
             })
@@ -222,25 +226,31 @@
                 console.error('Error:', error);
                 showAlert(error.message);
             });
-            document.getElementById('confirmModal').style.display = 'none';  // Ẩn modal
-        });
-
-        document.getElementById('cancelDelete').addEventListener('click', function() {
-            document.getElementById('confirmModal').style.display = 'none';  // Ẩn modal khi hủy
-            showAlert('Cancel the delete operation.');
-        });
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Thêm sự kiện cho tất cả các nút "Delete" để hiển thị modal
             document.querySelectorAll('.button-delete').forEach((button, index) => {
                 button.addEventListener('click', function() {
-                    const id_employee = this.closest('.staff-row').getAttribute('data-id');
-                    const employeeElement = this.closest('.staff-row');
-                    deleteEmployee(id_employee, employeeElement);
+                    id_employee_to_delete = this.closest('.staff-row').querySelector('span').textContent.split(' - ')[1];
+                    employeeElementToDelete = this.closest('.staff-row');
+                    document.getElementById('confirmModal').style.display = 'block';  // Hiển thị modal xác nhận
                 });
+            });
+
+            // Sự kiện cho nút "Submit" trong modal
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                // Gọi hàm deleteEmployee khi nhấn "Submit" trong modal
+                deleteEmployee(id_employee_to_delete, employeeElementToDelete);
+                document.getElementById('confirmModal').style.display = 'none';  // Ẩn modal sau khi xóa
+            });
+
+            // Sự kiện cho nút "Cancel" trong modal để đóng modal
+            document.getElementById('cancelDelete').addEventListener('click', function() {
+                document.getElementById('confirmModal').style.display = 'none';  // Ẩn modal nếu nhấn "Cancel"
             });
         });
     </script>
-
 
     <script>
     const rectangle38 = document.querySelector('.Rectangle38');

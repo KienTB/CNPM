@@ -54,15 +54,14 @@
 
 <div class="container">
     <div class="profile-section">
-        <h2 class="profile-header">Edit information employee</h2> <!-- Thêm dòng này -->
+        <h2 class="profile-header">Edit information employee</h2>
         <form class="profile-form">
-            <input type="text" id="role" placeholder="Role" class="form-input" >
+            <input type="text" id="id_employee" placeholder="Employee ID" class="form-input" required>
             <input type="text" id="name" placeholder="Name" class="form-input" >
             <input type="text" id="gender" placeholder="Gender" class="form-input" >
             <input type="email" id="email" placeholder="Email" class="form-input">
             <input type="text" id="address" placeholder="Address" class="form-input" >
             <input type="text" id="phone" placeholder="Phone Number" class="form-input" >
-            <input type="text" id="username" placeholder="Username" class="form-input" >
         </form>
         <div class="buttons">
             <button class="btn cancel" type="button" onclick="goBack()">Cancel</button>
@@ -75,80 +74,130 @@
 </div>
 
 <script>
+    // Hàm hiển thị alert
     function showAlert(message) {
-    const alertBox = document.getElementById('success-alert');
-    alertBox.innerText = message; // Thay đổi nội dung alert theo thông báo
-    alertBox.classList.add('show'); // Hiển thị alert box
+        const alertBox = document.getElementById('success-alert');
+        alertBox.innerText = message;
+        alertBox.classList.add('show');
+        setTimeout(() => {
+            alertBox.classList.remove('show');
+        }, 3000);
+    }
 
-    // Tự động ẩn sau 3 giây
-    setTimeout(() => {
-        alertBox.classList.remove('show');
-    }, 3000);
-}
+    // Hàm quay về trang danh sách nhân viên
+    function goBack() {
+        window.location.href = "/admin/employee";
+    }
 
-function goBack() {
-    window.location.href = "/admin/employee";
-}
+    // Hàm để tìm kiếm thông tin nhân viên dựa trên ID
+    function findEmployee() {
+        const idEmployee = document.getElementById('id_employee').value.trim();
 
-function checkUsernameExists(username) {
-    return fetch(`/api/check-username?username=${username}`)
-        .then(response => response.json())
-        .then(data => data.exists); // API trả về { exists: true/false }
-}
+        if (!idEmployee || isNaN(idEmployee)) {
+            showAlert('Please enter a valid Employee ID (number only)');
+            return;
+        }
 
-function submitForm() {
-    const name = document.getElementById('name').value;
-    const role = document.getElementById('role').value;
-    const gender = document.getElementById('gender').value;
-    const address = document.getElementById('address').value;
-    const phone = document.getElementById('phone').value;
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
+        console.log('Fetching employee data for ID:', idEmployee);
 
-    checkUsernameExists(username)
-        .then(exists => {
-            if (exists) {
-                showAlert("Username already exists. Please choose another.");
-                return;
-            }
-
-            const employeeData = {
-                name: name,
-                role: role,
-                gender: gender,
-                address: address,
-                phone: phone,
-                username: username,
-                email: email,
-                password: "123456" // Mật khẩu mặc định
-            };
-
-            fetch('/api/add-employee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employeeData),
+        fetch(`/api/get-employee-info/${idEmployee}`)
+            .then(response => {
+                console.log('Get employee response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
             })
-            .then(response => response.text()) // Chuyển đổi phản hồi sang text để log
             .then(data => {
-                console.log(data); // Log kết quả phản hồi
-                showAlert('Employee added successfully!');
+                console.log('Employee data received:', data);
+                if (data) {
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('gender').value = data.gender || '';
+                    document.getElementById('email').value = data.email || '';
+                    document.getElementById('address').value = data.address || '';
+                    document.getElementById('phone').value = data.phone || '';
+                } else {
+                    throw new Error('No employee data received');
+                }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showAlert('Failed to add employee.');
+                console.error('Error fetching employee:', error);
+                showAlert('Employee not found or error loading information');
             });
+    }
+
+    // Hàm cập nhật thông tin nhân viên
+    function submitForm() {
+        const idEmployee = document.getElementById('id_employee').value.trim();
+
+        // Kiểm tra ID
+        if (!idEmployee || isNaN(idEmployee)) {
+            showAlert('Please enter a valid Employee ID (number only)');
+            return;
+        }
+
+        // Lấy và kiểm tra dữ liệu
+        const employeeData = {
+            name: document.getElementById('name').value.trim(),
+            gender: document.getElementById('gender').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            address: document.getElementById('address').value.trim(),
+            phone: document.getElementById('phone').value.trim()
+        };
+
+        // Kiểm tra dữ liệu bắt buộc
+        if (!employeeData.name || !employeeData.email) {
+            showAlert('Name and Email are required fields');
+            return;
+        }
+
+        console.log('Sending update request with data:', employeeData);
+
+        fetch(`/api/update-employee/${idEmployee}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employeeData),
+        })
+        .then(response => {
+            console.log('Update response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Update response data:', data);
+            if (data.success) {
+                showAlert(data.message || 'Employee updated successfully!');
+                setTimeout(() => {
+                    window.location.href = "/admin/employee";
+                }, 3000);
+            } else {
+                throw new Error(data.message || 'Update failed');
+            }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error updating employee:', error);
+            showAlert(error.message || 'Failed to update employee');
         });
-}
+    }
 
+    // Thêm event listener khi trang được load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Thêm event listener cho input ID
+        const idInput = document.getElementById('id_employee');
+        if (idInput) {
+            idInput.addEventListener('blur', findEmployee);
+        }
+
+        // Thêm event listener cho form để prevent default submission
+        const form = document.querySelector('.profile-form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm();
+            });
+        }
+    });
 </script>
 </body>
 </html>
-
-<!--tạo API POST /api/add-employee để thêm nhân viên.-->
-<!--JS trên FE gửi dữ liệu từ form đến API thông qua fetch.-->
-<!--BE nhận dữ liệu và thêm vào cơ sở dữ liệu.-->
