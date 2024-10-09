@@ -1,5 +1,6 @@
 package com.cnpm.demo.model.Service;
 
+import com.cnpm.demo.model.DTO.AttendenceDTO;
 import com.cnpm.demo.model.Model.Attendence;
 import com.cnpm.demo.model.Model.Employee;
 import com.cnpm.demo.model.Repository.AttendenceRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AttendenceService {
@@ -27,10 +29,29 @@ public class AttendenceService {
             throw new RuntimeException("Employee not found with username: " + username);
         }
 
-        // Chuyển đổi từ String sang LocalDate
         LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ISO_DATE);
-
-        // Truy vấn điểm danh theo Employee và date
         return attendenceRepository.findByEmployeeAndDate(employee, date);
+    }
+
+    public List<AttendenceDTO> getAllAttendence() {
+        // Lấy tất cả các bản ghi từ bảng attendence
+        List<Attendence> attendenceList = attendenceRepository.findAll();
+
+        // Dùng stream để kết hợp dữ liệu từ bảng employee và attendence
+        return attendenceList.stream()
+                .map(attendence -> {
+                    Employee employee = employeeRepository.findById(attendence.getEmployee().getIdEmployee())
+                            .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + attendence.getEmployee().getIdEmployee()));
+
+                    // Tạo AttendenceDTO chứa thông tin cần thiết
+                    return new AttendenceDTO(
+                            (int) employee.getIdEmployee(),
+                            employee.getName(),
+                            attendence.getDate(),
+                            attendence.getTimeIn(),
+                            attendence.getTimeOut()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

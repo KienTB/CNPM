@@ -19,7 +19,7 @@ public class EmployeeService {
         // Lấy tất cả các nhân viên từ DB
         return employees.stream()
                 .filter(emp -> !"admin".equalsIgnoreCase(emp.getRole()))
-                .map(emp -> new EmployeeDTO(emp.getIdEmployee(), emp.getName()))  // Chuyển đổi sang EmployeeDTO
+                .map(emp -> new EmployeeDTO((int) emp.getIdEmployee(), emp.getName()))  // Chuyển đổi sang EmployeeDTO
                 .collect(Collectors.toList());
     }
 
@@ -28,10 +28,9 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(Long idEmployee) {
-        return employeeRepository.findById(Math.toIntExact(idEmployee)).orElse(null);
+        return employeeRepository.findById(idEmployee).orElse(null);
     }
-
-    public void deleteEmployee(Long idEmployee) {
-        employeeRepository.deleteById(Math.toIntExact(idEmployee));
+    public boolean existsByUsername(String username) {
+        return employeeRepository.existsByUsername(username);
     }
 }

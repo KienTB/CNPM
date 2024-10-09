@@ -3,71 +3,6 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-.Wireframe9 {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    background: white;
-}
-
-.Rectangle40 {
-    width: 900px;
-    height: 442px;
-    position: absolute;
-    background: #EFEFF2;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25);
-    border-radius: 15px;
-    left: 402px;
-    top: 184px;
-}
-
-.Cam {
-    width: 79px;
-    height: 45px;
-    position: absolute;
-    color: #004867;
-    font-size: 32px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    left: 803px;
-    top: 377px;
-}
-
-.Group47, .Group48 {
-    width: 237px;
-    height: 69px;
-    position: absolute;
-    background: #247BA0;
-    border-color: black;
-    border-radius: 15px;
-    outline: none
-}
-.Group47:hover, .Group48:hover {
-    background: #004867;
-    color: white;
-    border-color: wheat;
-}
-.Group47 {
-    left: 402px;
-    top: 679px;
-}
-
-.Group48 {
-    left: 1050px;
-    top: 682px;
-}
-
-
-
-
-.Clockin, .Clockout {
-    color: #EFEFF2;
-    font-size: 30px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    position: absolute;
-}
-
 .HomePage:hover, .Mclockin:hover, .Salary:hover, .Notification:hover, .Support:hover, .Absence:hover {
     color: #004867;
     border-bottom: #004867 2px solid;
@@ -113,22 +48,6 @@ body {
 .Rectangle52, .Rectangle51, .Rectangle50, .Rectangle49 {
     width: 256px;
     height: 270px;
-}
-
-.Rectangle52 {
-    top: 324px;
-}
-
-.Rectangle51 {
-    top: 243px;
-}
-
-.Rectangle50 {
-    top: 162px;
-}
-
-.Rectangle49 {
-    top: 81px;
 }
 
 .Absence, .Support, .Notification, .Salary, .HomePage,.Mclockin {
@@ -286,16 +205,17 @@ input[type="search"] {
    
 }   
 .Group39 {
-    width: 880px;
-    height: 160px;
-    position: absolute;
-    left: 402px;
-    top: 804px;
+    width: 1000px;
+    height: 500px;
+    position: fixed;
+    left: 340px;
+    top: 170px;
     border-radius: 3px;
     border : 1px solid #004867;
     background: #EFEFF2;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25);
     border-radius: 15px;
+    overflow: auto;
 }
 
     
@@ -310,3 +230,50 @@ input[type="search"] {
     left: 341.78px;
     top: 19.82px;
 }
+
+#clockin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+#clockin-table th, #clockin-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#clockin-table th {
+    background-color: #004867;
+    color: white;
+}
+
+#clockin-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+#clockin-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination button {
+    padding: 8px 16px;
+    margin: 0 5px;
+    background-color: #004867;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #003349;
+}
+
+

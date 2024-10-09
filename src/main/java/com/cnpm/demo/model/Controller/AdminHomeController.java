@@ -21,6 +21,11 @@ public class AdminHomeController {
         return "admin-add_employee";
     }
 
+    @GetMapping("/admin/admin-edit_employee")
+    public String editEmployeePage() {
+        return "admin-edit_employee";
+    }
+
 
     @GetMapping("/admin/admin-clockin_page")
     public String clockinPage() {

@@ -21,6 +21,8 @@ public class AttendenceController {
         return attendenceService.getAttendenceByUsernameAndDate(username, date);
     }
 
+
+
 }
 //sử dụng AttendenceService để lấy dữ liệu điểm danh dựa trên username và date.
 // xử lý các yêu cầu HTTP liên quan đến dữ liệu điểm danh (attendance).

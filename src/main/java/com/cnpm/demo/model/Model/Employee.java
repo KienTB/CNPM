@@ -36,7 +36,7 @@ public class Employee {
 
     // Getters và Setters
 
-    public int getIdEmployee() {
+    public long getIdEmployee() {
         return idEmployee;
     }
 

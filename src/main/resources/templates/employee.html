@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Employee</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="/employee_styles.css" />
 </head>
 <body>
@@ -34,7 +33,7 @@
         </div>
     </div>
     <div class="Rectangle38">
-        <a href="/home_page" class="btn">
+        <a href="/admin/admin-home_page" class="btn">
             <div class="Workday">Workday</div>
         </a>
         <div class="Group33">
@@ -52,42 +51,89 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
-    <!-- Icons Section -->
-    <div class="rectangle-c"><span class="add">Add</span></div>
 
     <div class="rectangle-d">
-        <span class="name-staff-id-1">Name - StaffID</span>
+        <div class="staff-row">
+            <span class="name-staff-id-1">Bùi Trung Kiên - 1</span>
+            <div class="button-container">
+                <button class="button-edit">Edit</button>
+                <button class="button-delete">Delete</button>
+            </div>
+        </div>
     </div>
+
     <div class="rectangle-e">
-        <span class="name-staff-id-2">Name - StaffID</span>
+        <div class="staff-row">
+            <span class="name-staff-id-2">Name - StaffID</span>
+            <div class="button-container">
+                <button class="button-edit">Edit</button>
+                <button class="button-delete">Delete</button>
+            </div>
+        </div>
     </div>
+
     <div class="rectangle-f">
-        <span class="name-staff-id-3">Name - StaffID</span>
+        <div class="staff-row">
+            <span class="name-staff-id-3">Name - StaffID</span>
+            <div class="button-container">
+                <button class="button-edit">Edit</button>
+                <button class="button-delete">Delete</button>
+            </div>
+        </div>
     </div>
     <div class="rectangle-g">
-        <span class="name-staff-id-4">Name - StaffID</span>
+        <div class="staff-row">
+            <span class="name-staff-id-4">Name - StaffID</span>
+            <div class="button-container">
+                <button class="button-edit">Edit</button>
+                <button class="button-delete">Delete</button>
+            </div>
+        </div>
     </div>
     <div class="rectangle-h">
-        <span class="name-staff-id-5">Name - StaffID</span>
-    </div>
-    <div class="rectangle-i">
-        <span class="name-staff-id-6">Name - StaffID</span>
-    </div>
-    <div class="rectangle-k">
-        <span class="name-staff-id-7">Name - StaffID</span>
+        <div class="staff-row">
+            <span class="name-staff-id-5">Name - StaffID</span>
+            <div class="button-container">
+                <button class="button-edit">Edit</button>
+                <button class="button-delete">Delete</button>
+            </div>
+        </div>
     </div>
     <div class="rectangle-0">
         <button class="button-add">Add</button>
     </div>
-
+    <div id="success-alert" class="alert-box">
+        Employee added successfully!
+    </div>
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <p>Are you sure you want to delete this employee?</p>
+            <button id="confirmDelete">Submit</button>
+            <button id="cancelDelete">Cancel</button>
+        </div>
+    </div>
     <script>
+        function showAlert(message) {
+        const alertBox = document.getElementById('success-alert');
+        alertBox.innerText = message; // Thay đổi nội dung alert theo thông báo
+        alertBox.classList.add('show'); // Hiển thị alert box
+
+        // Tự động ẩn sau 3 giây
+        setTimeout(() => {
+            alertBox.classList.remove('show');
+        }, 3000);
+    }
+
         // Sự kiện cho nút Add
         document.querySelector('.button-add').addEventListener('click', function() {
             window.location.href = '/admin/admin-add_employee';
+        });
+
+        // Sự kiện cho nút Edit
+        document.querySelector('.button-edit').addEventListener('click', function() {
+            window.location.href = '/admin/admin-edit_employee';
         });
 
         // Function to display employees
@@ -140,12 +186,76 @@
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data) && data.length > 0) {
-                    displayEmployees(data); // Gọi hàm hiển thị danh sách nhân viên
+                    displayEmployees(data);
                 } else {
                     console.error("Không tìm thấy nhân viên nào");
                 }
             })
             .catch(error => console.error('Error:', error));
+    </script>
+
+    <script>
+        let id_employeeToDelete;
+        let employeeElementToDelete;
+
+        function deleteEmployee(id_employee, employeeElement) {
+            document.getElementById('confirmModal').style.display = 'block';  // Hiển thị modal
+            id_employeeToDelete = id_employee;  // Lưu lại id và element cần xóa
+            employeeElementToDelete = employeeElement;
+        }
+
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            fetch(`/api/delete-employee/${id_employeeToDelete}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    employeeElementToDelete.remove();  // Xóa nhân viên khỏi giao diện
+                    showAlert(`The employee whose id ${id_employee} code has been deleted.`);
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text || `Delete failed for employee with id ${id_employee} code`);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert(error.message);
+            });
+            document.getElementById('confirmModal').style.display = 'none';  // Ẩn modal
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            document.getElementById('confirmModal').style.display = 'none';  // Ẩn modal khi hủy
+            showAlert('Cancel the delete operation.');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.button-delete').forEach((button, index) => {
+                button.addEventListener('click', function() {
+                    const id_employee = this.closest('.staff-row').getAttribute('data-id');
+                    const employeeElement = this.closest('.staff-row');
+                    deleteEmployee(id_employee, employeeElement);
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+    const rectangle38 = document.querySelector('.Rectangle38');
+    const addButton = document.querySelector('.button-add');
+
+    window.addEventListener('scroll', function() {
+        const rect38Position = rectangle38.getBoundingClientRect();
+        const addButtonPosition = addButton.getBoundingClientRect();
+
+        if (addButtonPosition.top < rect38Position.bottom) {
+            addButton.style.visibility = 'hidden';
+        } else {
+            addButton.style.visibility = 'visible';
+        }
+    });
     </script>
 
 </div>
