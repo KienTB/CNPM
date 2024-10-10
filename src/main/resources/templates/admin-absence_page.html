@@ -11,6 +11,7 @@
 <body>
 <div class="Wireframe9">
 
+    <!-- Sidebar Menu -->
     <div class="Component3">
         <div class="Rectangle37">
             <a href="/admin/admin-home_page" class="btn">
@@ -33,6 +34,8 @@
             </a>
         </div>
     </div>
+
+    <!-- Top Bar -->
     <div class="Rectangle38">
         <a href="/home_page" class="btn">
             <div class="Workday">Workday</div>
@@ -42,7 +45,7 @@
                 <input type="search" name="search" placeholder="Search" required>
                 <div class="Group36">
                     <a href="/profile_page" class="AccountCircle">
-                        <img src="/asset/icon.png" alt="">
+                        <img src="/asset/icon.png" alt="Profile Icon">
                     </a>
                     <div class="Bell">
                         <img src="/asset/bell.png" alt="Notifications Bell">
@@ -54,12 +57,170 @@
             </div>
         </div>
     </div>
+
+    <!-- Absence Table -->
     <div class="Group39">
-        <div class="ThNgBO">Thông báo</div>
+        <table id="clockin-table" class="clockin-table">
+            <thead>
+            <tr>
+                <th>ID Employee</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Reason</th>
+                <th>Request Date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody id="attendence-table-body">
+            <!-- Data will be dynamically injected here -->
+
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <button id="prevPage" onclick="prevPage()">Previous</button>
+            <span id="pageInfo"></span>
+            <button id="nextPage" onclick="nextPage()">Next</button>
+        </div>
     </div>
-
-
 </div>
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let totalPages = 1;
+    let data = [];
+
+    // Dữ liệu ảo
+    const mockData = [
+        { id_employee: '40', start_date: '2024-10-10', end_date: '2024-10-12', reason: 'nhà đi việc', request_date: '2024-10-10', status: 'Pending' },
+        { id_employee: '40', start_date: '2024-10-11', end_date: '2024-10-15', reason: 'nhà đi chơi', request_date: '2024-10-11', status: 'Approved' },
+        { id_employee: '40', start_date: '2024-10-12', end_date: '2024-10-16', reason: 'anh đang bận', request_date: '2024-10-12', status: 'Approved' },
+
+    ];
+
+    // Function to format date (dd/mm/yyyy)
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Function to display data in the table
+    function displayTable(data) {
+        const tableBody = document.getElementById('attendence-table-body');
+        tableBody.innerHTML = '';
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedData = data.slice(start, end);
+
+        if (paginatedData.length > 0) {
+            paginatedData.forEach(row => {
+                const tableRow = document.createElement('tr');
+
+                // ID Employee column
+                const idCell = document.createElement('td');
+                idCell.textContent = row.id_employee;
+                tableRow.appendChild(idCell);
+
+                // Start Date column
+                const startDateCell = document.createElement('td');
+                startDateCell.textContent = formatDate(row.start_date);
+                tableRow.appendChild(startDateCell);
+
+                // End Date column
+                const endDateCell = document.createElement('td');
+                endDateCell.textContent = formatDate(row.end_date);
+                tableRow.appendChild(endDateCell);
+
+                // Reason column
+                const reasonCell = document.createElement('td');
+                reasonCell.textContent = row.reason;
+                tableRow.appendChild(reasonCell);
+
+                // Request Date column
+                const requestDateCell = document.createElement('td');
+                requestDateCell.textContent = formatDate(row.request_date);
+                tableRow.appendChild(requestDateCell);
+
+                // Status column with dropdown
+                const statusCell = document.createElement('td');
+                const select = document.createElement('select');
+
+                // Option Pending
+                const optionPending = document.createElement('option');
+                optionPending.value = 'Pending';
+                optionPending.textContent = 'Pending';
+
+                // Option Approved
+                const optionApproved = document.createElement('option');
+                optionApproved.value = 'Approved';
+                optionApproved.textContent = 'Approved';
+
+                // Set the correct selected option
+                if (row.status === 'Approved') {
+                    optionApproved.selected = true;
+                } else {
+                    optionPending.selected = true;
+                }
+
+                select.appendChild(optionPending);
+                select.appendChild(optionApproved);
+                statusCell.appendChild(select);
+
+                // Event for status change
+                select.onchange = function () {
+                    updateStatus(row.id_leave, this.value);
+                };
+
+                tableRow.appendChild(statusCell);
+                tableBody.appendChild(tableRow);
+            });
+        } else {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 6;
+            emptyCell.textContent = 'No data available for this page.';
+            emptyRow.appendChild(emptyCell);
+            tableBody.appendChild(emptyRow);
+        }
+
+        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+    }
+
+    // Function to update the status
+    function updateStatus(idLeave, newStatus) {
+        console.log(`Status of leave ID ${idLeave} has been updated to ${newStatus}`);
+        // Bạn có thể thêm logic cập nhật trạng thái ở đây nếu cần thiết
+    }
+
+    // Function for next page
+    function nextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayTable(data);
+        }
+    }
+
+    // Function for previous page
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayTable(data);
+        }
+    }
+
+    // Fetch data when the page loads
+    window.onload = function () {
+        data = mockData;
+        totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
+        displayTable(data);
+    };
+</script>
 </body>
 
 </html>

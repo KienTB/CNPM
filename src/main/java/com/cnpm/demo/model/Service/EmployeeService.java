@@ -3,6 +3,7 @@ package com.cnpm.demo.model.Service;
 import com.cnpm.demo.model.DTO.EmployeeDTO;
 import com.cnpm.demo.model.Model.Employee;
 import com.cnpm.demo.model.Repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class EmployeeService {
     public boolean existsByUsername(String username) {
         return employeeRepository.existsByUsername(username);
     }
+    @Transactional
     public boolean updateEmployee(Long idEmployee, Employee newEmployeeDetails) {
         Employee existingEmployee = employeeRepository.findById(idEmployee).orElse(null);
         if (existingEmployee != null) {
